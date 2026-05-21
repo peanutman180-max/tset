@@ -1,68 +1,141 @@
-body {
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
     height: 100vh;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: black;
-    font-family: Arial;
+    background: #0a0e27;
+    font-family: 'Arial', sans-serif;
 }
 
-.background {
+/* Starfield Canvas */
+#starCanvas {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background:
-    radial-gradient(circle at center, #001133, black);
-    animation: moveBg 10s infinite alternate;
+    z-index: 1;
 }
 
-@keyframes moveBg {
-    from {
-        transform: scale(1);
-    }
-
-    to {
-        transform: scale(1.1);
-    }
-}
-
+/* Card Container */
 .card {
     position: relative;
     width: 500px;
-    padding: 30px;
+    padding: 40px;
     border-radius: 20px;
-
-    background: rgba(0,0,0,0.6);
-
-    border: 1px solid #00bfff;
-
-    backdrop-filter: blur(10px);
-
+    background: rgba(0, 20, 40, 0.7);
+    border: 2px solid #00bfff;
+    backdrop-filter: blur(15px);
     text-align: center;
-
     color: white;
-
-    box-shadow: 0 0 25px #00bfff;
+    box-shadow: 0 0 30px rgba(0, 191, 255, 0.4), inset 0 0 30px rgba(0, 191, 255, 0.1);
+    z-index: 10;
+    animation: cardFloat 3s ease-in-out infinite;
 }
 
+@keyframes cardFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Profile Picture */
 .pfp {
-    width: 120px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
+    border: 3px solid #00bfff;
+    margin-bottom: 20px;
+    object-fit: cover;
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.6);
+    transition: transform 0.3s;
 }
 
+.pfp:hover {
+    transform: scale(1.05) rotate(5deg);
+}
+
+/* Username */
+h1 {
+    font-size: 28px;
+    margin: 15px 0;
+    color: #00ff88;
+    text-shadow: 0 0 10px #00ff88;
+    letter-spacing: 2px;
+}
+
+/* Bio */
+p {
+    font-size: 16px;
+    color: #ecf0f1;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+/* Separator */
+.separator {
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #00bfff, transparent);
+    margin: 20px auto;
+}
+
+/* Social Links */
 .socials {
-    margin-top: 20px;
+    margin: 25px 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 }
 
 .socials a {
-    color: white;
-    font-size: 40px;
-    margin: 10px;
-    transition: 0.3s;
+    color: #00bfff;
+    font-size: 35px;
+    transition: all 0.3s;
+    display: inline-block;
 }
 
 .socials a:hover {
-    color: #00bfff;
+    color: #00ff88;
+    transform: scale(1.2) rotate(10deg);
+    text-shadow: 0 0 15px #00ff88;
+}
+
+/* View Count */
+.view-count {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #64c8ff;
+    opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .card {
+        width: 90%;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .pfp {
+        width: 100px;
+        height: 100px;
+    }
+
+    .socials a {
+        font-size: 28px;
+    }
 }
