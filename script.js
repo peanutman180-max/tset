@@ -27,13 +27,15 @@ function createParticles() {
     for (let i = 0; i < PARTICLE_COUNT; i++) {
         particles.push(spawnParticle());
     }
-}function spawnParticle() {
+}
+
+function spawnParticle() {
     const side = Math.floor(Math.random() * 4);
     let x, y;
-    if (side === 0) { x = Math.random() * canvas.width; y = -10; }
-    else if (side === 1) { x = canvas.width + 10; y = Math.random() * canvas.height; }
-    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + 10; }
-    else { x = -10; y = Math.random() * canvas.height; }
+    if (side === 0) { x = Math.random() * canvas.width; y = -50; }
+    else if (side === 1) { x = canvas.width + 50; y = Math.random() * canvas.height; }
+    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + 50; }
+    else { x = -50; y = Math.random() * canvas.height; }
 
     const angle = Math.atan2(CENTER_Y() - y, CENTER_X() - x);
     return {
@@ -49,8 +51,6 @@ function createParticles() {
     };
 }
 
-
-
 function randomColor() {
     const colors = [
         '100, 200, 255',
@@ -61,12 +61,13 @@ function randomColor() {
     ];
     return colors[Math.floor(Math.random() * colors.length)];
 }
+
 function resetParticle(p) {
     const side = Math.floor(Math.random() * 4);
-    if (side === 0) { p.x = Math.random() * canvas.width; p.y = -10; }
-    else if (side === 1) { p.x = canvas.width + 10; p.y = Math.random() * canvas.height; }
-    else if (side === 2) { p.x = Math.random() * canvas.width; p.y = canvas.height + 10; }
-    else { p.x = -10; p.y = Math.random() * canvas.height; }
+    if (side === 0) { p.x = Math.random() * canvas.width; p.y = -50; }
+    else if (side === 1) { p.x = canvas.width + 50; p.y = Math.random() * canvas.height; }
+    else if (side === 2) { p.x = Math.random() * canvas.width; p.y = canvas.height + 50; }
+    else { p.x = -50; p.y = Math.random() * canvas.height; }
 
     p.vx = 0; p.vy = 0;
     p.radius = Math.random() * 1.8 + 0.5;
@@ -125,7 +126,6 @@ function update() {
         });
 
     } else if (phase === 'explode') {
-        // Shrink the black hole as particles explode out
         blackHoleRadius = Math.max(blackHoleRadius - 1.2, 0);
         blackHoleOpacity = Math.max(blackHoleOpacity - 0.025, 0);
 
@@ -158,7 +158,6 @@ function update() {
 function drawBlackHole(cx, cy) {
     if (blackHoleRadius <= 0 || blackHoleOpacity <= 0) return;
 
-    // Accretion disk glow — outermost, very soft
     const outerGlow = ctx.createRadialGradient(cx, cy, blackHoleRadius * 0.8, cx, cy, blackHoleRadius * 3.5);
     outerGlow.addColorStop(0, `rgba(80, 40, 160, ${0.18 * blackHoleOpacity})`);
     outerGlow.addColorStop(0.4, `rgba(40, 80, 180, ${0.10 * blackHoleOpacity})`);
@@ -168,18 +167,16 @@ function drawBlackHole(cx, cy) {
     ctx.fillStyle = outerGlow;
     ctx.fill();
 
-    // Accretion ring — coloured halo just outside event horizon
     const ringGrad = ctx.createRadialGradient(cx, cy, blackHoleRadius * 0.75, cx, cy, blackHoleRadius * 1.6);
-    ringGrad.addColorStop(0,   `rgba(200, 120, 255, ${0.55 * blackHoleOpacity})`);
-    ringGrad.addColorStop(0.35,`rgba(100, 180, 255, ${0.35 * blackHoleOpacity})`);
-    ringGrad.addColorStop(0.7, `rgba(60,  60,  120, ${0.12 * blackHoleOpacity})`);
-    ringGrad.addColorStop(1,   'rgba(0,0,0,0)');
+    ringGrad.addColorStop(0,    `rgba(200, 120, 255, ${0.55 * blackHoleOpacity})`);
+    ringGrad.addColorStop(0.35, `rgba(100, 180, 255, ${0.35 * blackHoleOpacity})`);
+    ringGrad.addColorStop(0.7,  `rgba(60,  60,  120, ${0.12 * blackHoleOpacity})`);
+    ringGrad.addColorStop(1,    'rgba(0,0,0,0)');
     ctx.beginPath();
     ctx.arc(cx, cy, blackHoleRadius * 1.6, 0, Math.PI * 2);
     ctx.fillStyle = ringGrad;
     ctx.fill();
 
-    // Event horizon — pure black circle
     ctx.beginPath();
     ctx.arc(cx, cy, blackHoleRadius, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(0, 0, 0, ${blackHoleOpacity})`;
@@ -191,7 +188,6 @@ function draw() {
     ctx.fillStyle = 'rgba(2, 4, 8, 1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw particles FIRST (behind black hole)
     particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -204,10 +200,8 @@ function draw() {
         ctx.fill();
     });
 
-    // Black hole on top of particles but behind card (canvas is always behind card via z-index)
     drawBlackHole(CENTER_X(), CENTER_Y());
 
-    // White flash on explode
     if (phase === 'bundle' && phaseTimer > PHASE_DURATIONS.bundle * 0.7) {
         const flashProgress = (phaseTimer - PHASE_DURATIONS.bundle * 0.7) / (PHASE_DURATIONS.bundle * 0.3);
         const gradient = ctx.createRadialGradient(CENTER_X(), CENTER_Y(), 0, CENTER_X(), CENTER_Y(), 60 * flashProgress);
