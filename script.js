@@ -25,51 +25,19 @@ let particles = [];
 function createParticles() {
     particles = [];
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-        particles.push(spawnParticle(i));
+        particles.push(spawnParticle());
     }
 }
 
-function edgePosition(index, total) {
-    // Distribute evenly around the full perimeter
-    const perimeter = 2 * (canvas.width + canvas.height);
-    const step = perimeter / total;
-    const pos = (index * step) + (Math.random() * step * 0.8);
-    const w = canvas.width;
-    const h = canvas.height;
-    const pad = 60;
-
-    let x, y;
-    if (pos < w) {
-        // Top edge
-        x = pos;
-        y = -pad;
-    } else if (pos < w + h) {
-        // Right edge
-        x = w + pad;
-        y = pos - w;
-    } else if (pos < 2 * w + h) {
-        // Bottom edge
-        x = w - (pos - w - h);
-        y = h + pad;
-    } else {
-        // Left edge
-        x = -pad;
-        y = h - (pos - 2 * w - h);
-    }
-    return { x, y };
-}
-
-function spawnParticle(index) {
-    const { x, y } = edgePosition(index ?? Math.floor(Math.random() * PARTICLE_COUNT), PARTICLE_COUNT);
-    const angle = Math.atan2(CENTER_Y() - y, CENTER_X() - x);
+function spawnParticle() {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
     return {
         x, y,
         vx: 0, vy: 0,
         radius: Math.random() * 1.8 + 0.5,
-        opacity: Math.random() * 0.5 + 0.5,
+        opacity: Math.random() * 0.5 + 0.2,
         color: randomColor(),
-        angle,
-        dist: Math.hypot(CENTER_X() - x, CENTER_Y() - y),
         explodeVx: 0,
         explodeVy: 0,
     };
@@ -86,15 +54,13 @@ function randomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
-function resetParticle(p, index) {
-    const { x, y } = edgePosition(index ?? Math.floor(Math.random() * PARTICLE_COUNT), PARTICLE_COUNT);
-    p.x = x; p.y = y;
+function resetParticle(p) {
+    p.x = Math.random() * canvas.width;
+    p.y = Math.random() * canvas.height;
     p.vx = 0; p.vy = 0;
     p.radius = Math.random() * 1.8 + 0.5;
-    p.opacity = Math.random() * 0.5 + 0.5;
+    p.opacity = Math.random() * 0.5 + 0.2;
     p.color = randomColor();
-    p.angle = Math.atan2(CENTER_Y() - p.y, CENTER_X() - p.x);
-    p.dist = Math.hypot(CENTER_X() - p.x, CENTER_Y() - p.y);
     p.explodeVx = 0;
     p.explodeVy = 0;
 }
@@ -162,7 +128,7 @@ function update() {
         blackHoleRadius = 0;
         blackHoleOpacity = 0;
         if (phaseTimer === 1) {
-            particles.forEach((p, i) => resetParticle(p, i));
+            particles.forEach(p => resetParticle(p));
         }
     }
 
