@@ -16,8 +16,8 @@ let blackHoleOpacity = 0;
 const PHASE_DURATIONS = {
     gather: 320,
     bundle: 60,
-    explode: 140,
-    reset: 80
+    explode: 160,
+    rest: 80
 };
 
 let particles = [];
@@ -36,10 +36,12 @@ function spawnParticle() {
         x, y,
         vx: 0, vy: 0,
         radius: Math.random() * 1.8 + 0.5,
-        opacity: Math.random() * 0.5 + 0.2,
+        opacity: Math.random() * 0.5 + 0.4,
         color: randomColor(),
         explodeVx: 0,
         explodeVy: 0,
+        targetX: Math.random() * canvas.width,
+        targetY: Math.random() * canvas.height,
     };
 }
 
@@ -54,12 +56,13 @@ function randomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
-function resetParticle(p) {
-    p.x = Math.random() * canvas.width;
-    p.y = Math.random() * canvas.height;
+function resetParticleToScreen(p) {
+    // Give each particle a new random target spot on screen to drift to
+    p.targetX = Math.random() * canvas.width;
+    p.targetY = Math.random() * canvas.height;
     p.vx = 0; p.vy = 0;
     p.radius = Math.random() * 1.8 + 0.5;
-    p.opacity = Math.random() * 0.5 + 0.2;
+    p.opacity = Math.random() * 0.5 + 0.4;
     p.color = randomColor();
     p.explodeVx = 0;
     p.explodeVy = 0;
@@ -71,20 +74,21 @@ function update() {
     const progress = phaseTimer / PHASE_DURATIONS[phase];
 
     if (phase === 'gather') {
-        blackHoleRadius = Math.min(blackHoleRadius + 0.6, 55);
-        blackHoleOpacity = Math.min(blackHoleOpacity + 0.02, 1);
+        // Black hole grows as particles get sucked in
+        blackHoleRadius = Math.min(blackHoleRadius + 0.4, 55);
+        blackHoleOpacity = Math.min(blackHoleOpacity + 0.015, 1);
 
         particles.forEach(p => {
             const dx = cx - p.x;
             const dy = cy - p.y;
-            const ease = 0.025 + progress * 0.04;
+            const ease = 0.018 + progress * 0.03;
             p.vx += dx * ease;
             p.vy += dy * ease;
             p.vx *= 0.85;
             p.vy *= 0.85;
             p.x += p.vx;
             p.y += p.vy;
-            p.opacity = Math.min(1, p.opacity + 0.01);
+            p.opacity = Math.min(1, p.opacity + 0.005);
         });
 
     } else if (phase === 'bundle') {
@@ -103,41 +107,72 @@ function update() {
             p.opacity = Math.min(1, p.opacity + 0.03);
             p.radius = Math.min(p.radius + 0.03, 3.5);
 
+            // Pre-calculate explode targets — fly to random screen positions
             if (phaseTimer === PHASE_DURATIONS.bundle - 1) {
-                const explodeAngle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 18 + 6;
-                p.explodeVx = Math.cos(explodeAngle) * speed;
-                p.explodeVy = Math.sin(explodeAngle) * speed;
+                p.targetX = Math.random() * canvas.width;
+                p.targetY = Math.random() * canvas.height;
+                const angle = Math.atan2(p.targetY - cy, p.targetX - cx);
+                const speed = Math.random() * 16 + 8;
+                p.explodeVx = Math.cos(angle) * speed;
+                p.explodeVy = Math.sin(angle) * speed;
             }
         });
 
     } else if (phase === 'explode') {
-        blackHoleRadius = Math.max(blackHoleRadius - 1.2, 0);
-        blackHoleOpacity = Math.max(blackHoleOpacity - 0.025, 0);
+        // Black hole shrinks as particles fly out
+        blackHoleRadius = Math.max(blackHoleRadius - 1.0, 0);
+        blackHoleOpacity = Math.max(blackHoleOpacity - 0.02, 0);
 
         particles.forEach(p => {
-            p.vx = p.explodeVx * (1 - progress * 0.6);
-            p.vy = p.explodeVy * (1 - progress * 0.6);
-            p.x += p.vx;
-            p.y += p.vy;
-            p.opacity = Math.max(0, 1 - progress * 1.2);
-            p.radius = Math.max(0.3, p.radius - 0.04);
+            // Decelerate as they approach their target
+            const dx = p.targetX - p.x;
+            const dy = p.targetY - p.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist > 5) {
+                p.vx += dx * 0.015;
+                p.vy += dy * 0.015;
+                p.vx *= 0.88;
+                p.vy *= 0.88;
+                p.x += p.vx;
+                p.y += p.vy;
+            } else {
+                // Arrived — settle in place
+                p.x = p.targetX;
+                p.y = p.targetY;
+                p.vx = 0; p.vy = 0;
+            }
+
+            // Fade back in instead of fading out
+            p.opacity = Math.min(0.9, p.opacity + 0.02);
+            p.radius = Math.max(0.5, p.radius - 0.02);
         });
 
-    } else if (phase === 'reset') {
+    } else if (phase === 'rest') {
+        // Particles just sit on screen, gently twinkling
         blackHoleRadius = 0;
         blackHoleOpacity = 0;
-        if (phaseTimer === 1) {
-            particles.forEach(p => resetParticle(p));
+
+        particles.forEach(p => {
+            // Subtle random drift while resting
+            p.x += (Math.random() - 0.5) * 0.3;
+            p.y += (Math.random() - 0.5) * 0.3;
+            p.opacity += (Math.random() - 0.5) * 0.02;
+            p.opacity = Math.min(0.95, Math.max(0.2, p.opacity));
+        });
+
+        // On last rest frame reset targets for next gather
+        if (phaseTimer === PHASE_DURATIONS.rest - 1) {
+            particles.forEach(p => resetParticleToScreen(p));
         }
     }
 
     if (phaseTimer >= PHASE_DURATIONS[phase]) {
         phaseTimer = 0;
-        if (phase === 'gather')       phase = 'bundle';
-        else if (phase === 'bundle')  phase = 'explode';
-        else if (phase === 'explode') phase = 'reset';
-        else if (phase === 'reset')   phase = 'gather';
+        if (phase === 'gather')      phase = 'bundle';
+        else if (phase === 'bundle') phase = 'explode';
+        else if (phase === 'explode') phase = 'rest';
+        else if (phase === 'rest')   phase = 'gather';
     }
 }
 
@@ -190,8 +225,8 @@ function draw() {
 
     if (phase === 'bundle' && phaseTimer > PHASE_DURATIONS.bundle * 0.7) {
         const flashProgress = (phaseTimer - PHASE_DURATIONS.bundle * 0.7) / (PHASE_DURATIONS.bundle * 0.3);
-        const gradient = ctx.createRadialGradient(CENTER_X(), CENTER_Y(), 0, CENTER_X(), CENTER_Y(), 60 * flashProgress);
-        gradient.addColorStop(0, `rgba(200, 230, 255, ${0.6 * flashProgress})`);
+        const gradient = ctx.createRadialGradient(CENTER_X(), CENTER_Y(), 0, CENTER_X(), CENTER_Y(), 80 * flashProgress);
+        gradient.addColorStop(0, `rgba(200, 230, 255, ${0.7 * flashProgress})`);
         gradient.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
