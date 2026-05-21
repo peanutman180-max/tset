@@ -1,4 +1,3 @@
-// ── Starfield Canvas ──
 const canvas = document.getElementById('starCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -9,15 +8,16 @@ const PARTICLE_COUNT = 180;
 const CENTER_X = () => canvas.width / 2;
 const CENTER_Y = () => canvas.height / 2;
 
-// Phases: 'gather' → 'bundle' → 'explode' → 'reset'
 let phase = 'gather';
 let phaseTimer = 0;
+let blackHoleRadius = 0;
+let blackHoleOpacity = 0;
 
 const PHASE_DURATIONS = {
-    gather: 120,   // frames to drift inward
-    bundle: 40,    // frames to hold tight
-    explode: 80,   // frames to fly outward
-    reset: 30      // frames to fade/reset
+    gather: 120,
+    bundle: 60,
+    explode: 80,
+    reset: 30
 };
 
 let particles = [];
@@ -35,8 +35,7 @@ function spawnParticle() {
     return {
         x: CENTER_X() + Math.cos(angle) * dist,
         y: CENTER_Y() + Math.sin(angle) * dist,
-        vx: 0,
-        vy: 0,
+        vx: 0, vy: 0,
         radius: Math.random() * 1.8 + 0.5,
         opacity: Math.random() * 0.5 + 0.5,
         color: randomColor(),
@@ -49,11 +48,11 @@ function spawnParticle() {
 
 function randomColor() {
     const colors = [
-        '100, 200, 255',   // cyan-blue
-        '167, 139, 250',   // purple
-        '244, 114, 182',   // pink
-        '255, 255, 255',   // white
-        '96, 240, 190',    // teal
+        '100, 200, 255',
+        '167, 139, 250',
+        '244, 114, 182',
+        '255, 255, 255',
+        '96, 240, 190',
     ];
     return colors[Math.floor(Math.random() * colors.length)];
 }
@@ -79,7 +78,9 @@ function update() {
     const progress = phaseTimer / PHASE_DURATIONS[phase];
 
     if (phase === 'gather') {
-        // Pull particles toward center with easing
+        blackHoleRadius = Math.min(blackHoleRadius + 0.6, 55);
+        blackHoleOpacity = Math.min(blackHoleOpacity + 0.02, 1);
+
         particles.forEach(p => {
             const dx = cx - p.x;
             const dy = cy - p.y;
@@ -94,7 +95,9 @@ function update() {
         });
 
     } else if (phase === 'bundle') {
-        // Clump tightly at center with slight jitter
+        blackHoleRadius = Math.min(blackHoleRadius + 0.3, 70);
+        blackHoleOpacity = 1;
+
         particles.forEach(p => {
             const dx = cx - p.x;
             const dy = cy - p.y;
@@ -104,11 +107,9 @@ function update() {
             p.vy *= 0.7;
             p.x += p.vx + (Math.random() - 0.5) * 0.5;
             p.y += p.vy + (Math.random() - 0.5) * 0.5;
-            // Charge up — brighten
             p.opacity = Math.min(1, p.opacity + 0.03);
             p.radius = Math.min(p.radius + 0.03, 3.5);
 
-            // Pre-calculate explode direction on last bundle frame
             if (phaseTimer === PHASE_DURATIONS.bundle - 1) {
                 const explodeAngle = Math.random() * Math.PI * 2;
                 const speed = Math.random() * 18 + 6;
@@ -118,7 +119,10 @@ function update() {
         });
 
     } else if (phase === 'explode') {
-        // Fly outward, fade out
+        // Shrink the black hole as particles explode out
+        blackHoleRadius = Math.max(blackHoleRadius - 1.2, 0);
+        blackHoleOpacity = Math.max(blackHoleOpacity - 0.025, 0);
+
         particles.forEach(p => {
             p.vx = p.explodeVx * (1 - progress * 0.6);
             p.vy = p.explodeVy * (1 - progress * 0.6);
@@ -129,44 +133,75 @@ function update() {
         });
 
     } else if (phase === 'reset') {
-        // Quietly reposition particles off-screen
+        blackHoleRadius = 0;
+        blackHoleOpacity = 0;
         if (phaseTimer === 1) {
             particles.forEach(p => resetParticle(p));
         }
     }
 
-    // Advance phase
     if (phaseTimer >= PHASE_DURATIONS[phase]) {
         phaseTimer = 0;
-        if (phase === 'gather')  phase = 'bundle';
+        if (phase === 'gather')       phase = 'bundle';
         else if (phase === 'bundle')  phase = 'explode';
         else if (phase === 'explode') phase = 'reset';
         else if (phase === 'reset')   phase = 'gather';
     }
 }
 
+function drawBlackHole(cx, cy) {
+    if (blackHoleRadius <= 0 || blackHoleOpacity <= 0) return;
+
+    // Accretion disk glow — outermost, very soft
+    const outerGlow = ctx.createRadialGradient(cx, cy, blackHoleRadius * 0.8, cx, cy, blackHoleRadius * 3.5);
+    outerGlow.addColorStop(0, `rgba(80, 40, 160, ${0.18 * blackHoleOpacity})`);
+    outerGlow.addColorStop(0.4, `rgba(40, 80, 180, ${0.10 * blackHoleOpacity})`);
+    outerGlow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, blackHoleRadius * 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = outerGlow;
+    ctx.fill();
+
+    // Accretion ring — coloured halo just outside event horizon
+    const ringGrad = ctx.createRadialGradient(cx, cy, blackHoleRadius * 0.75, cx, cy, blackHoleRadius * 1.6);
+    ringGrad.addColorStop(0,   `rgba(200, 120, 255, ${0.55 * blackHoleOpacity})`);
+    ringGrad.addColorStop(0.35,`rgba(100, 180, 255, ${0.35 * blackHoleOpacity})`);
+    ringGrad.addColorStop(0.7, `rgba(60,  60,  120, ${0.12 * blackHoleOpacity})`);
+    ringGrad.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, blackHoleRadius * 1.6, 0, Math.PI * 2);
+    ctx.fillStyle = ringGrad;
+    ctx.fill();
+
+    // Event horizon — pure black circle
+    ctx.beginPath();
+    ctx.arc(cx, cy, blackHoleRadius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0, 0, 0, ${blackHoleOpacity})`;
+    ctx.fill();
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Dark background
     ctx.fillStyle = 'rgba(2, 4, 8, 1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw particles
+    // Draw particles FIRST (behind black hole)
     particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${p.color}, ${p.opacity})`;
         ctx.fill();
 
-        // Glow
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius * 2.5, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${p.color}, ${p.opacity * 0.15})`;
         ctx.fill();
     });
 
-    // Flash at center during bundle → explode transition
+    // Black hole on top of particles but behind card (canvas is always behind card via z-index)
+    drawBlackHole(CENTER_X(), CENTER_Y());
+
+    // White flash on explode
     if (phase === 'bundle' && phaseTimer > PHASE_DURATIONS.bundle * 0.7) {
         const flashProgress = (phaseTimer - PHASE_DURATIONS.bundle * 0.7) / (PHASE_DURATIONS.bundle * 0.3);
         const gradient = ctx.createRadialGradient(CENTER_X(), CENTER_Y(), 0, CENTER_X(), CENTER_Y(), 60 * flashProgress);
@@ -192,9 +227,10 @@ window.addEventListener('resize', () => {
     createParticles();
     phase = 'gather';
     phaseTimer = 0;
+    blackHoleRadius = 0;
+    blackHoleOpacity = 0;
 });
 
-// Card click animation
 const card = document.querySelector('.card');
 if (card) {
     card.addEventListener('click', function () {
