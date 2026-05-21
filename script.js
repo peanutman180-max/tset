@@ -14,10 +14,10 @@ let blackHoleRadius = 0;
 let blackHoleOpacity = 0;
 
 const PHASE_DURATIONS = {
-    gather: 180,
+    gather: 320,
     bundle: 60,
     explode: 140,
-    reset: 30
+    reset: 80
 };
 
 let particles = [];
