@@ -14,9 +14,9 @@ let blackHoleRadius = 0;
 let blackHoleOpacity = 0;
 
 const PHASE_DURATIONS = {
-    gather: 120,
+    gather: 180,
     bundle: 60,
-    explode: 80,
+    explode: 140,
     reset: 30
 };
 
