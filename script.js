@@ -27,24 +27,29 @@ function createParticles() {
     for (let i = 0; i < PARTICLE_COUNT; i++) {
         particles.push(spawnParticle());
     }
-}
+}function spawnParticle() {
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    if (side === 0) { x = Math.random() * canvas.width; y = -10; }
+    else if (side === 1) { x = canvas.width + 10; y = Math.random() * canvas.height; }
+    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + 10; }
+    else { x = -10; y = Math.random() * canvas.height; }
 
-function spawnParticle() {
-    const angle = Math.random() * Math.PI * 2;
-    const dist = Math.random() * Math.max(canvas.width, canvas.height) * 0.6 + 100;
+    const angle = Math.atan2(CENTER_Y() - y, CENTER_X() - x);
     return {
-        x: CENTER_X() + Math.cos(angle) * dist,
-        y: CENTER_Y() + Math.sin(angle) * dist,
+        x, y,
         vx: 0, vy: 0,
         radius: Math.random() * 1.8 + 0.5,
         opacity: Math.random() * 0.5 + 0.5,
         color: randomColor(),
         angle: angle,
-        dist: dist,
+        dist: Math.hypot(CENTER_X() - x, CENTER_Y() - y),
         explodeVx: 0,
         explodeVy: 0,
     };
 }
+
+
 
 function randomColor() {
     const colors = [
@@ -56,18 +61,19 @@ function randomColor() {
     ];
     return colors[Math.floor(Math.random() * colors.length)];
 }
-
 function resetParticle(p) {
-    const angle = Math.random() * Math.PI * 2;
-    const dist = Math.random() * Math.max(canvas.width, canvas.height) * 0.6 + 100;
-    p.x = CENTER_X() + Math.cos(angle) * dist;
-    p.y = CENTER_Y() + Math.sin(angle) * dist;
+    const side = Math.floor(Math.random() * 4);
+    if (side === 0) { p.x = Math.random() * canvas.width; p.y = -10; }
+    else if (side === 1) { p.x = canvas.width + 10; p.y = Math.random() * canvas.height; }
+    else if (side === 2) { p.x = Math.random() * canvas.width; p.y = canvas.height + 10; }
+    else { p.x = -10; p.y = Math.random() * canvas.height; }
+
     p.vx = 0; p.vy = 0;
     p.radius = Math.random() * 1.8 + 0.5;
     p.opacity = Math.random() * 0.5 + 0.5;
     p.color = randomColor();
-    p.angle = angle;
-    p.dist = dist;
+    p.angle = Math.atan2(CENTER_Y() - p.y, CENTER_X() - p.x);
+    p.dist = Math.hypot(CENTER_X() - p.x, CENTER_Y() - p.y);
     p.explodeVx = 0;
     p.explodeVy = 0;
 }
