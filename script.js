@@ -25,17 +25,38 @@ let particles = [];
 function createParticles() {
     particles = [];
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-        particles.push(spawnParticle());
+        particles.push(spawnParticle(i));
     }
 }
 
-function spawnParticle() {
-    const side = Math.floor(Math.random() * 4);
+function spawnParticle(index) {
+    // Spread evenly around all edges using index so no clumping
+    const total = PARTICLE_COUNT;
+    const perSide = Math.floor(total / 4);
+    const side = index === undefined
+        ? Math.floor(Math.random() * 4)
+        : Math.floor(index / perSide) % 4;
+
     let x, y;
-    if (side === 0) { x = Math.random() * canvas.width; y = -50; }
-    else if (side === 1) { x = canvas.width + 50; y = Math.random() * canvas.height; }
-    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + 50; }
-    else { x = -50; y = Math.random() * canvas.height; }
+    const rand = index === undefined ? Math.random() : (index % perSide) / perSide + (Math.random() * 0.02);
+
+    if (side === 0) {
+        // Top edge — spread full width
+        x = rand * canvas.width;
+        y = -50;
+    } else if (side === 1) {
+        // Right edge — spread full height
+        x = canvas.width + 50;
+        y = rand * canvas.height;
+    } else if (side === 2) {
+        // Bottom edge — spread full width
+        x = rand * canvas.width;
+        y = canvas.height + 50;
+    } else {
+        // Left edge — spread full height
+        x = -50;
+        y = rand * canvas.height;
+    }
 
     const angle = Math.atan2(CENTER_Y() - y, CENTER_X() - x);
     return {
@@ -44,7 +65,7 @@ function spawnParticle() {
         radius: Math.random() * 1.8 + 0.5,
         opacity: Math.random() * 0.5 + 0.5,
         color: randomColor(),
-        angle: angle,
+        angle,
         dist: Math.hypot(CENTER_X() - x, CENTER_Y() - y),
         explodeVx: 0,
         explodeVy: 0,
@@ -62,12 +83,28 @@ function randomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
-function resetParticle(p) {
-    const side = Math.floor(Math.random() * 4);
-    if (side === 0) { p.x = Math.random() * canvas.width; p.y = -50; }
-    else if (side === 1) { p.x = canvas.width + 50; p.y = Math.random() * canvas.height; }
-    else if (side === 2) { p.x = Math.random() * canvas.width; p.y = canvas.height + 50; }
-    else { p.x = -50; p.y = Math.random() * canvas.height; }
+function resetParticle(p, index) {
+    const total = PARTICLE_COUNT;
+    const perSide = Math.floor(total / 4);
+    const side = index === undefined
+        ? Math.floor(Math.random() * 4)
+        : Math.floor(index / perSide) % 4;
+
+    const rand = index === undefined ? Math.random() : (index % perSide) / perSide + (Math.random() * 0.02);
+
+    if (side === 0) {
+        p.x = rand * canvas.width;
+        p.y = -50;
+    } else if (side === 1) {
+        p.x = canvas.width + 50;
+        p.y = rand * canvas.height;
+    } else if (side === 2) {
+        p.x = rand * canvas.width;
+        p.y = canvas.height + 50;
+    } else {
+        p.x = -50;
+        p.y = rand * canvas.height;
+    }
 
     p.vx = 0; p.vy = 0;
     p.radius = Math.random() * 1.8 + 0.5;
@@ -142,7 +179,7 @@ function update() {
         blackHoleRadius = 0;
         blackHoleOpacity = 0;
         if (phaseTimer === 1) {
-            particles.forEach(p => resetParticle(p));
+            particles.forEach((p, i) => resetParticle(p, i));
         }
     }
 
