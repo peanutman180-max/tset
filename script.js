@@ -261,3 +261,13 @@ if (card) {
         }, 100);
     });
 }
+
+const cookie = document.getElementById("cookie");
+
+cookie.addEventListener("click", () => {
+  cookie.classList.add("clicked");
+
+  setTimeout(() => {
+    cookie.classList.remove("clicked");
+  }, 100);
+});
