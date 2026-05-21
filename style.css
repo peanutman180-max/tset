@@ -288,50 +288,21 @@ h1 {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cookie Click</title>
 
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #f5e6c8;
-    }
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #222;
+}
 
-    #cookie {
-      font-size: 120px;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.1s ease;
-    }
+#cookie {
+  width: 200px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
 
-    /* when clicked */
-    #cookie.clicked {
-      transform: scale(0.9);
-    }
-  </style>
-</head>
-<body>
-
-  <div id="cookie">🍪</div>
-
-  <script>
-    const cookie = document.getElementById("cookie");
-
-    cookie.addEventListener("click", () => {
-      cookie.classList.add("clicked");
-
-      setTimeout(() => {
-        cookie.classList.remove("clicked");
-      }, 100);
-    });
-  </script>
-
-</body>
-</html>
+#cookie.clicked {
+  transform: scale(0.9);
+}
