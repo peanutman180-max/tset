@@ -29,35 +29,38 @@ function createParticles() {
     }
 }
 
-function spawnParticle(index) {
-    // Spread evenly around all edges using index so no clumping
-    const total = PARTICLE_COUNT;
-    const perSide = Math.floor(total / 4);
-    const side = index === undefined
-        ? Math.floor(Math.random() * 4)
-        : Math.floor(index / perSide) % 4;
+function edgePosition(index, total) {
+    // Distribute evenly around the full perimeter
+    const perimeter = 2 * (canvas.width + canvas.height);
+    const step = perimeter / total;
+    const pos = (index * step) + (Math.random() * step * 0.8);
+    const w = canvas.width;
+    const h = canvas.height;
+    const pad = 60;
 
     let x, y;
-    const rand = index === undefined ? Math.random() : (index % perSide) / perSide + (Math.random() * 0.02);
-
-    if (side === 0) {
-        // Top edge — spread full width
-        x = rand * canvas.width;
-        y = -50;
-    } else if (side === 1) {
-        // Right edge — spread full height
-        x = canvas.width + 50;
-        y = rand * canvas.height;
-    } else if (side === 2) {
-        // Bottom edge — spread full width
-        x = rand * canvas.width;
-        y = canvas.height + 50;
+    if (pos < w) {
+        // Top edge
+        x = pos;
+        y = -pad;
+    } else if (pos < w + h) {
+        // Right edge
+        x = w + pad;
+        y = pos - w;
+    } else if (pos < 2 * w + h) {
+        // Bottom edge
+        x = w - (pos - w - h);
+        y = h + pad;
     } else {
-        // Left edge — spread full height
-        x = -50;
-        y = rand * canvas.height;
+        // Left edge
+        x = -pad;
+        y = h - (pos - 2 * w - h);
     }
+    return { x, y };
+}
 
+function spawnParticle(index) {
+    const { x, y } = edgePosition(index ?? Math.floor(Math.random() * PARTICLE_COUNT), PARTICLE_COUNT);
     const angle = Math.atan2(CENTER_Y() - y, CENTER_X() - x);
     return {
         x, y,
@@ -84,28 +87,8 @@ function randomColor() {
 }
 
 function resetParticle(p, index) {
-    const total = PARTICLE_COUNT;
-    const perSide = Math.floor(total / 4);
-    const side = index === undefined
-        ? Math.floor(Math.random() * 4)
-        : Math.floor(index / perSide) % 4;
-
-    const rand = index === undefined ? Math.random() : (index % perSide) / perSide + (Math.random() * 0.02);
-
-    if (side === 0) {
-        p.x = rand * canvas.width;
-        p.y = -50;
-    } else if (side === 1) {
-        p.x = canvas.width + 50;
-        p.y = rand * canvas.height;
-    } else if (side === 2) {
-        p.x = rand * canvas.width;
-        p.y = canvas.height + 50;
-    } else {
-        p.x = -50;
-        p.y = rand * canvas.height;
-    }
-
+    const { x, y } = edgePosition(index ?? Math.floor(Math.random() * PARTICLE_COUNT), PARTICLE_COUNT);
+    p.x = x; p.y = y;
     p.vx = 0; p.vy = 0;
     p.radius = Math.random() * 1.8 + 0.5;
     p.opacity = Math.random() * 0.5 + 0.5;
