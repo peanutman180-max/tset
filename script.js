@@ -65,9 +65,12 @@ window.addEventListener('resize', () => {
 });
 
 // Add click animation on profile card
-document.querySelector('.profile-card').addEventListener('click', function() {
-    this.style.transform = 'scale(0.98)';
-    setTimeout(() => {
-        this.style.transform = 'scale(1)';
-    }, 100);
-});
+const card = document.querySelector('.card');
+if (card) {
+    card.addEventListener('click', function() {
+        this.style.transform = 'translate(-50%, -50%) scale(0.98)';
+        setTimeout(() => {
+            this.style.transform = 'translate(-50%, -50%) scale(1)';
+        }, 100);
+    });
+}
