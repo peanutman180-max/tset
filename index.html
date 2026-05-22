@@ -265,3 +265,33 @@
 </html>
 
 <div id="stars"></div>
+<script>
+const starsContainer = document.getElementById("stars");
+
+function createStar() {
+    const star = document.createElement("div");
+    star.classList.add("star");
+
+    // random position
+    star.style.left = Math.random() * window.innerWidth + "px";
+    star.style.top = Math.random() * window.innerHeight + "px";
+
+    // random size
+    const size = Math.random() * 4 + 2;
+    star.style.width = size + "px";
+    star.style.height = size + "px";
+
+    // click effect
+    star.addEventListener("click", () => {
+        star.remove();
+        createStar();
+    });
+
+    starsContainer.appendChild(star);
+}
+
+// create starting stars
+for (let i = 0; i < 120; i++) {
+    createStar();
+}
+</script>
