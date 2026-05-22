@@ -278,7 +278,7 @@ document.addEventListener('mousemove', (e) => {
     font-size: ${10 + Math.random() * 10}px;
     line-height: 1;
   `;
-  sparkle.textContent = ['✦', '✧', '⋆', '★', '✨'][Math.floor(Math.random() * 5)];
+  sparkle.textContent = ['✦', '✧', '⋆', '★', '🟍'][Math.floor(Math.random() * 5)];
   document.body.appendChild(sparkle);
   setTimeout(() => sparkle.remove(), 600);
 });
