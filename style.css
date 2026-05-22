@@ -308,3 +308,9 @@ body {
 .soundcloud-embed:hover {
   opacity: 1;
 }
+
+@keyframes sparkle-fade {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); color: white; }
+  50%  { opacity: 0.7; transform: translate(-50%, -80%) scale(1.2); color: #a78bfa; }
+  100% { opacity: 0; transform: translate(-50%, -120%) scale(0.5); color: #7c3aed; }
+}
