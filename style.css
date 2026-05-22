@@ -297,3 +297,9 @@ body {
   background: #222;
 }
 
+.soundcloud-embed {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 4px;
+}
