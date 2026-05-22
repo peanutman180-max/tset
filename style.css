@@ -348,3 +348,36 @@ body {
 .gmail-icon {
   background: #ea4335;
 }
+
+#stars {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    box-shadow:
+        0 0 6px white,
+        0 0 12px #66ccff;
+    cursor: pointer;
+    pointer-events: auto;
+    animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+    from {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+}
