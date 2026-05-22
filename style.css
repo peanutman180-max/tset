@@ -297,12 +297,3 @@ body {
   background: #222;
 }
 
-#cookie {
-  width: 200px;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
-
-#cookie.clicked {
-  transform: scale(0.9);
-}
