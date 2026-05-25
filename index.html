@@ -1,142 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>peanutman180-max</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2e0e6ad65.js" crossorigin="anonymous"></script>
 
-    body {
+  <style>
+    #intro-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: #0d0d0d;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      min-height: 100vh;
+      z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
+      user-select: none;
+      transition: none;
     }
 
-    .card {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 16px;
-      padding: 32px 28px;
-      width: 340px;
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    #intro-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      pointer-events: none;
     }
 
-    .avatar {
-      width: 90px;
-      height: 90px;
+    #intro-cat {
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid #333;
-      margin-bottom: 12px;
+      border: 3px solid #ffffff22;
     }
 
-    h1 { font-size: 1.3rem; margin-bottom: 4px; }
-
-    .online {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      color: #4caf50;
-      margin-bottom: 10px;
-    }
-    .online::before {
-      content: '';
-      width: 8px; height: 8px;
-      background: #4caf50;
-      border-radius: 50%;
+    #intro-name {
+      color: white;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      margin: 0;
     }
 
-    .bio {
+    #intro-hint {
+      color: #ffffff55;
       font-size: 0.85rem;
-      color: #aaa;
-      margin-bottom: 6px;
+      margin: 0;
+      animation: pulse 1.5s infinite;
     }
 
-    .tags {
-      font-size: 0.8rem;
-      color: #888;
-      margin-bottom: 18px;
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
     }
 
-    /* Copy buttons */
-    .copy-row {
-      background: #222;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 10px 14px;
-      margin-bottom: 8px;
+    #drag-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 44px;
+      height: 100%;
+      background: #ffffff18;
+      cursor: ew-resize;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .copy-row:hover { background: #2a2a2a; }
-    .copy-row .label { font-size: 0.75rem; color: #888; }
-    .copy-row .value { font-size: 0.85rem; }
-    .copy-row .copy-hint { font-size: 0.7rem; color: #555; }
-
-    /* Links */
-    .links {
-      display: flex;
-      gap: 10px;
       justify-content: center;
-      margin: 14px 0;
-    }
-    .links a {
-      background: #222;
-      border: 1px solid #333;
-      color: #fff;
-      text-decoration: none;
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 1.4rem;
+      color: white;
+      border-right: 2px solid #ffffff30;
       transition: background 0.2s;
     }
-    .links a:hover { background: #333; }
 
-    /* Wish List Button */
-    .wishlist-btn {
-      margin-top: 14px;
+    #drag-bar:hover {
+      background: #ffffff28;
+    }
+
+    .soundcloud-embed {
       width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 4px;
+      opacity: 0.85;
+    }
+
+    .soundcloud-embed:hover {
+      opacity: 1;
+    }
+
+    /* ── Wish List button ── */
+    .wishlist-btn {
+      width: 100%;
+      margin-top: 12px;
       padding: 10px;
       background: linear-gradient(135deg, #ff6b35, #ff3b3b);
       color: #fff;
       border: none;
       border-radius: 10px;
+      font-family: 'Syne', sans-serif;
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       letter-spacing: 0.5px;
       transition: opacity 0.2s, transform 0.1s;
     }
-    .wishlist-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    .wishlist-btn:hover { opacity: 0.88; transform: scale(1.02); }
 
-    /* Modal Overlay */
-    .modal-overlay {
+    /* ── Modal ── */
+    .wl-overlay {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.75);
-      z-index: 100;
+      z-index: 10000;
       align-items: center;
       justify-content: center;
     }
-    .modal-overlay.open { display: flex; }
+    .wl-overlay.open { display: flex; }
 
-    .modal {
+    .wl-modal {
       background: #1a1a1a;
       border: 1px solid #333;
       border-radius: 16px;
       padding: 28px 24px;
-      width: 320px;
+      width: 310px;
       text-align: center;
       box-shadow: 0 12px 40px rgba(0,0,0,0.7);
       animation: popIn 0.2s ease;
@@ -145,17 +134,18 @@
       from { transform: scale(0.9); opacity: 0; }
       to   { transform: scale(1);   opacity: 1; }
     }
-
-    .modal h2 {
-      margin-bottom: 8px;
+    .wl-modal h2 {
+      font-family: 'Syne', sans-serif;
       font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 6px;
     }
-    .modal p {
+    .wl-modal p {
       font-size: 0.8rem;
       color: #888;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    .modal input {
+    .wl-modal input {
       width: 100%;
       padding: 10px 12px;
       border-radius: 8px;
@@ -165,14 +155,11 @@
       font-size: 0.85rem;
       margin-bottom: 12px;
       outline: none;
+      font-family: 'DM Sans', sans-serif;
     }
-    .modal input:focus { border-color: #ff6b35; }
-
-    .modal-actions {
-      display: flex;
-      gap: 8px;
-    }
-    .modal-actions button {
+    .wl-modal input:focus { border-color: #ff6b35; }
+    .wl-actions { display: flex; gap: 8px; }
+    .wl-actions button {
       flex: 1;
       padding: 9px;
       border-radius: 8px;
@@ -180,21 +167,14 @@
       cursor: pointer;
       font-size: 0.85rem;
       font-weight: 600;
+      font-family: 'Syne', sans-serif;
       transition: opacity 0.2s;
     }
-    .btn-open {
-      background: linear-gradient(135deg, #ff6b35, #ff3b3b);
-      color: #fff;
-    }
-    .btn-open:hover { opacity: 0.85; }
-    .btn-close {
-      background: #333;
-      color: #aaa;
-    }
-    .btn-close:hover { background: #3a3a3a; }
-
-    /* Saved link display */
-    .saved-link {
+    .wl-open { background: linear-gradient(135deg, #ff6b35, #ff3b3b); color: #fff; }
+    .wl-open:hover { opacity: 0.85; }
+    .wl-close { background: #333; color: #aaa; }
+    .wl-close:hover { background: #3a3a3a; }
+    .wl-saved {
       margin-top: 10px;
       background: #111;
       border: 1px solid #333;
@@ -206,114 +186,252 @@
       text-align: left;
       display: none;
     }
-    .saved-link a {
-      color: #ff8c6b;
-      text-decoration: underline;
-    }
+    .wl-saved a { color: #ff8c6b; text-decoration: underline; }
   </style>
 </head>
 <body>
 
+<!-- INTRO OVERLAY -->
+<div id="intro-overlay">
+  <div id="intro-content">
+    <img src="cat.jpeg" id="intro-cat" alt="cat">
+    <h1 id="intro-name">peanutman180-max</h1>
+    <p id="intro-hint">← drag to enter</p>
+  </div>
+  <div id="drag-bar">⠿</div>
+</div>
+
+<!-- MAIN PAGE -->
+<canvas id="starCanvas"></canvas>
 <div class="card">
-  <img class="avatar" src="https://peanutman180-max.github.io/tset/cat.jpeg" alt="peanutman180-max" />
-  <h1>peanutman180-max</h1>
-  <div class="online">online</div>
+  <div class="profile-frame">
+    <div class="glow-ring"></div>
+    <img src="cat.jpeg" class="pfp" alt="peanutman180-max">
+  </div>
+  <div class="name-block">
+    <h1>peanutman180-max</h1>
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      online
+    </div>
+  </div>
   <p class="bio">come on fight me!!</p>
-  <p class="tags">🇩🇪 Germany &nbsp;🎂 13 &nbsp;💡 always improving</p>
-
-  <div class="copy-row" onclick="copyText('TikTok', '@.cuverp', this)">
-    <div>
-      <div class="label">TikTok</div>
-      <div class="value">@.cuverp</div>
-    </div>
-    <div class="copy-hint">tap to copy</div>
+  <!-- BADGES -->
+  <div class="badge-row">
+    <span class="badge">🇩🇪 Germany</span>
+    <span class="badge">🎂 13</span>
   </div>
 
-  <div class="copy-row" onclick="copyText('Discord', 'kiskoo_', this)">
-    <div>
-      <div class="label">Discord</div>
-      <div class="value">kiskoo_</div>
-    </div>
-    <div class="copy-hint">tap to copy</div>
+  <!-- QUOTE -->
+  <div class="quote-box">
+    💡 always improving
+  </div>
+  <div class="social-buttons">
+    <button class="copy-btn tiktok-btn" onclick="copyUser('tiktok', '@.cuverp', this)">
+      <div class="icon-circle tiktok-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="white">
+          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.36 6.36 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.73a4.85 4.85 0 0 1-1.01-.04z"/>
+        </svg>
+      </div>
+      <div class="btn-label">
+        <div class="btn-platform">TikTok</div>
+        <div class="btn-sub">@.cuverp</div>
+      </div>
+      <span class="copy-feedback" id="tiktok-feedback">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        Copied!
+      </span>
+    </button>
+    <button class="copy-btn discord-btn" onclick="copyUser('discord', 'kiskoo_', this)">
+      <div class="icon-circle discord-icon">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="white">
+          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+        </svg>
+      </div>
+      <div class="btn-label">
+        <div class="btn-platform">Discord</div>
+        <div class="btn-sub">kiskoo_</div>
+      </div>
+      <span class="copy-feedback" id="discord-feedback">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        Copied!
+      </span>
+    </button>
+    <button class="copy-btn gmail-btn" onclick="copyUser('gmail', 'peanutman180@gmail.com', this)">
+      <div class="icon-circle gmail-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="white">
+          <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/>
+        </svg>
+      </div>
+      <div class="btn-label">
+        <div class="btn-platform">Gmail</div>
+        <div class="btn-sub">peanutman180@gmail.com</div>
+      </div>
+      <span class="copy-feedback" id="gmail-feedback">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        Copied!
+      </span>
+    </button>
+  </div>
+  <div class="separator"></div>
+  <div class="socials">
+    <a href="https://github.com/peanutman180-max" class="social-pill" target="_blank">
+      <i class="fab fa-github"></i>
+      <span>GitHub</span>
+    </a>
+    <a href="#" class="social-pill discord-pill">
+      <i class="fab fa-discord"></i>
+      <span>Discord</span>
+    </a>
+  </div>
+  <div class="separator"></div>
+  <div class="soundcloud-embed">
+    <iframe width="100%" height="120" scrolling="no" frameborder="no" allow="autoplay"
+      src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/goyfriendisraelfart/komb-7&color=%23ffffff&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false">
+    </iframe>
   </div>
 
-  <div class="copy-row" onclick="copyText('Gmail', 'peanutman180@gmail.com', this)">
-    <div>
-      <div class="label">Gmail</div>
-      <div class="value">peanutman180@gmail.com</div>
-    </div>
-    <div class="copy-hint">tap to copy</div>
-  </div>
+  <!-- ── WISH LIST BUTTON ── -->
+  <button class="wishlist-btn" onclick="openWishlist()">🎁 Wish List</button>
 
-  <div class="links">
-    <a href="https://github.com/peanutman180-max" target="_blank">GitHub</a>
-    <a href="#">Discord</a>
+  <div class="view-count">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    <span id="view-number">0</span> views
   </div>
-
-  <!-- Wish List Button -->
-  <button class="wishlist-btn" onclick="openModal()">🎁 Wish List</button>
 </div>
 
-<!-- Wish List Modal -->
-<div class="modal-overlay" id="wishlistModal">
-  <div class="modal">
-    <h2>🎁 My Wish List</h2>
+<!-- ── WISH LIST MODAL ── -->
+<div class="wl-overlay" id="wlOverlay">
+  <div class="wl-modal">
+    <h2>🎁 Wish List</h2>
     <p>Paste your Amazon wish list link below</p>
-    <input type="url" id="wishlistInput" placeholder="https://www.amazon.com/hz/wishlist/..." />
-    <div class="saved-link" id="savedLink">
-      🔗 <a id="savedLinkAnchor" href="#" target="_blank">Open Wish List</a>
+    <input type="url" id="wlInput" placeholder="https://www.amazon.com/hz/wishlist/..." />
+    <div class="wl-saved" id="wlSaved">
+      🔗 <a id="wlSavedLink" href="#" target="_blank">Open Wish List</a>
     </div>
-    <div class="modal-actions" style="margin-top:12px">
-      <button class="btn-open" onclick="saveLink()">Save & Open</button>
-      <button class="btn-close" onclick="closeModal()">Close</button>
+    <div class="wl-actions" style="margin-top:12px">
+      <button class="wl-open" onclick="saveWishlist()">Save & Open</button>
+      <button class="wl-close" onclick="closeWishlist()">Close</button>
     </div>
   </div>
 </div>
 
+<script src="script.js"></script>
 <script>
-  function copyText(label, text, el) {
-    navigator.clipboard.writeText(text).then(() => {
-      const hint = el.querySelector('.copy-hint');
-      hint.textContent = 'Copied!';
-      setTimeout(() => hint.textContent = 'tap to copy', 1500);
+  function copyUser(platform, username, btn) {
+    navigator.clipboard.writeText(username).then(() => {
+      const fb = document.getElementById(platform + '-feedback');
+      fb.classList.add('show');
+      btn.classList.add('copied');
+      setTimeout(() => {
+        fb.classList.remove('show');
+        btn.classList.remove('copied');
+      }, 2000);
     });
   }
 
-  function openModal() {
-    document.getElementById('wishlistModal').classList.add('open');
-    // Load saved link if any
+  let views = Math.floor(Math.random() * 900) + 100;
+  document.getElementById('view-number').textContent = views.toLocaleString();
+
+  // INTRO DRAG LOGIC
+  const overlay = document.getElementById('intro-overlay');
+  const bar = document.getElementById('drag-bar');
+  let dragging = false;
+  let startX = 0;
+
+  bar.addEventListener('mousedown', (e) => { dragging = true; startX = e.clientX; });
+  bar.addEventListener('touchstart', (e) => { dragging = true; startX = e.touches[0].clientX; });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const moved = e.clientX - startX;
+    const pct = Math.min(100, Math.max(0, (moved / window.innerWidth) * 100));
+    overlay.style.transform = `translateX(${pct}%)`;
+    if (pct >= 60) finishReveal();
+  });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
+    const moved = e.touches[0].clientX - startX;
+    const pct = Math.min(100, Math.max(0, (moved / window.innerWidth) * 100));
+    overlay.style.transform = `translateX(${pct}%)`;
+    if (pct >= 60) finishReveal();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    const current = parseFloat(overlay.style.transform.replace('translateX(', '') || '0');
+    if (current < 60) {
+      overlay.style.transition = 'transform 0.3s ease';
+      overlay.style.transform = 'translateX(0)';
+      setTimeout(() => overlay.style.transition = 'none', 300);
+    } else finishReveal();
+  });
+
+  document.addEventListener('touchend', () => { dragging = false; });
+
+  function finishReveal() {
+    dragging = false;
+    overlay.style.transition = 'transform 0.4s ease';
+    overlay.style.transform = 'translateX(100%)';
+    setTimeout(() => overlay.remove(), 500);
+  }
+
+  // WISH LIST LOGIC
+  function openWishlist() {
+    document.getElementById('wlOverlay').classList.add('open');
     const saved = localStorage.getItem('wishlistUrl');
     if (saved) {
-      document.getElementById('wishlistInput').value = saved;
-      showSavedLink(saved);
+      document.getElementById('wlInput').value = saved;
+      showSaved(saved);
     }
   }
-
-  function closeModal() {
-    document.getElementById('wishlistModal').classList.remove('open');
+  function closeWishlist() {
+    document.getElementById('wlOverlay').classList.remove('open');
   }
-
-  function saveLink() {
-    const url = document.getElementById('wishlistInput').value.trim();
+  function saveWishlist() {
+    const url = document.getElementById('wlInput').value.trim();
     if (!url) return;
     localStorage.setItem('wishlistUrl', url);
-    showSavedLink(url);
+    showSaved(url);
     window.open(url, '_blank');
   }
-
-  function showSavedLink(url) {
-    const div = document.getElementById('savedLink');
-    const anchor = document.getElementById('savedLinkAnchor');
-    anchor.href = url;
-    anchor.textContent = url.length > 40 ? url.slice(0, 40) + '…' : url;
+  function showSaved(url) {
+    const div = document.getElementById('wlSaved');
+    const a = document.getElementById('wlSavedLink');
+    a.href = url;
+    a.textContent = url.length > 42 ? url.slice(0, 42) + '…' : url;
     div.style.display = 'block';
   }
-
-  // Close modal on overlay click
-  document.getElementById('wishlistModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+  document.getElementById('wlOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeWishlist();
   });
 </script>
 
 </body>
 </html>
+
+<div id="stars"></div>
+<script>
+const starsContainer = document.getElementById("stars");
+
+function createStar() {
+    const star = document.createElement("div");
+    star.classList.add("star");
+    star.style.left = Math.random() * window.innerWidth + "px";
+    star.style.top = Math.random() * window.innerHeight + "px";
+    const size = Math.random() * 4 + 2;
+    star.style.width = size + "px";
+    star.style.height = size + "px";
+    star.addEventListener("click", () => {
+        star.remove();
+        createStar();
+    });
+    starsContainer.appendChild(star);
+}
+
+for (let i = 0; i < 120; i++) {
+    createStar();
+}
+</script>
