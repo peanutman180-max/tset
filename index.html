@@ -9,7 +9,41 @@
   <script src="https://kit.fontawesome.com/a2e0e6ad65.js" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 100px; }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #ff6188;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { background: #fc9867; }
+  </style>
+</head>
+<body>
 
+  <h1>Welcome</h1>
+  <p>Click the button to see the ASCII animation</p>
+  
+  <button onclick="goToAnimation()">See the Animation</button>
+
+  <script>
+    function goToAnimation() {
+      window.location.href = "animation.html";
+    }
+  </script>
+
+</body>
+</html>
   <style>
     #intro-overlay {
       position: fixed;
