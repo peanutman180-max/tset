@@ -1,30 +1,30 @@
 const chars = " .,:;i1tfLCG08@";
-const width = 120;
-const height = 60;
-
 const output = document.getElementById("ascii");
 
 let t = 0;
 
-function frame(){
+function frame() {
+
+    const charWidth = 8;
+    const charHeight = 11;
+
+    const width = Math.floor(window.innerWidth / charWidth);
+    const height = Math.floor(window.innerHeight / charHeight);
 
     let text = "";
 
-    for(let y=0;y<height;y++){
+    for (let y = 0; y < height; y++) {
 
-        for(let x=0;x<width;x++){
+        for (let x = 0; x < width; x++) {
 
             let wave =
-                Math.sin(x*0.18+t)+
-                Math.cos(y*0.14+t*1.2)+
-                Math.sin((x+y)*0.08+t*0.5);
+                Math.sin(x * 0.18 + t) +
+                Math.cos(y * 0.14 + t * 1.2) +
+                Math.sin((x + y) * 0.08 + t * 0.5);
 
-            let index = Math.floor(
-                ((wave+3)/6)*(chars.length-1)
-            );
+            let index = Math.floor(((wave + 3) / 6) * (chars.length - 1));
 
             text += chars[index];
-
         }
 
         text += "\n";
@@ -35,7 +35,6 @@ function frame(){
     t += 0.05;
 
     requestAnimationFrame(frame);
-
 }
 
 frame();
