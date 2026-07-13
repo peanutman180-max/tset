@@ -8,8 +8,9 @@ function frame() {
     const charWidth = 8;
     const charHeight = 11;
 
-    const width = Math.floor(window.innerWidth / charWidth);
-    const height = Math.floor(window.innerHeight / charHeight);
+    const style = getComputedStyle(output);
+const charWidth = parseFloat(style.fontSize) * 0.6;
+const charHeight = parseFloat(style.lineHeight);
 
     let text = "";
 
