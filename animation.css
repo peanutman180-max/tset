@@ -1,0 +1,27 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#000;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    font-family:Consolas, monospace;
+}
+
+#ascii{
+    color:white;
+    font-size:11px;
+    line-height:11px;
+    user-select:none;
+    white-space:pre;
+    text-shadow:
+        2px 0 red,
+        -2px 0 cyan,
+        0 0 15px white;
+}
