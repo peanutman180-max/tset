@@ -5,25 +5,25 @@ let t = 0;
 
 function frame() {
 
-    const charWidth = 8;
-    const charHeight = 11;
-
     const style = getComputedStyle(output);
-const charWidth = parseFloat(style.fontSize) * 0.6;
-const charHeight = parseFloat(style.lineHeight);
+
+    const charWidth = parseFloat(style.fontSize) * 0.6;
+    const charHeight = parseFloat(style.lineHeight);
+
+    const width = Math.ceil(window.innerWidth / charWidth);
+    const height = Math.ceil(window.innerHeight / charHeight);
 
     let text = "";
 
     for (let y = 0; y < height; y++) {
-
         for (let x = 0; x < width; x++) {
 
-            let wave =
+            const wave =
                 Math.sin(x * 0.18 + t) +
                 Math.cos(y * 0.14 + t * 1.2) +
                 Math.sin((x + y) * 0.08 + t * 0.5);
 
-            let index = Math.floor(((wave + 3) / 6) * (chars.length - 1));
+            const index = Math.floor(((wave + 3) / 6) * (chars.length - 1));
 
             text += chars[index];
         }
